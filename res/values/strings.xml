@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Locale SSID Plug-in</string>
+    <string name="plugin_name">SSID</string>
+    <string name="ssid">SSID</string>
+</resources>

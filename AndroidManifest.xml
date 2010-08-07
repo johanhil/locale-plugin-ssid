@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.johanhil.ssid"
+    android:versionCode="5"
+    android:versionName="1.4"
+>
+    <!--
+        Locale requires Android 1.5, but targets a newer SDK so that it doesn't run in compatibility
+        mode. Setting the target will allow high resolution graphics, for example. Note that this
+        requires building with a newer version of the SDK, so be careful that you don't use APIs
+        that don't exist in older versions.
+    -->
+    <uses-sdk
+        android:minSdkVersion="3"
+        android:targetSdkVersion="6" />
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />    
+        
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/icon_app"
+    >
+        <!--
+            This Activity comes from the Locale platform JAR. If your app does not stand alone (e.g.
+            it is only a plug-in for Locale), including this in your manifest will help when users
+            tap the "Open" button in the Android Market.
+        -->
+        <activity
+            android:name="com.twofortyfouram.MarketActivity"
+            android:label="@string/app_name"
+            android:icon="@drawable/icon_app"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+        >
+            <intent-filter>
+                <action
+                    android:name="android.intent.action.MAIN" />
+                <category
+                    android:name="android.intent.category.INFO" />
+            </intent-filter>
+        </activity>
+        <!--
+            This is the "edit" Activity. The mdpi icon should be 32x32. The hdpi icon should be
+            48x48. Locale will scale the icons if necessary, but providing pre-scaled versions will
+            improve quality and performance.
+        -->
+        <activity
+            android:name=".EditActivity"
+            android:label="@string/plugin_name"
+            android:icon="@drawable/icon_plugin"
+        >
+            <!-- this Intent filter allows the plug-in to be discovered by Locale -->
+            <intent-filter>
+                <action
+                    android:name="com.twofortyfouram.locale.intent.action.EDIT_CONDITION" />
+            </intent-filter>
+        </activity>
+        <!-- This is the "query" BroadcastReceiver -->
+        <receiver
+            android:name=".QueryReceiver"
+        >
+            <!-- this Intent filter allows the plug-in to be queried -->
+            <intent-filter>
+                <action
+                    android:name="com.twofortyfouram.locale.intent.action.QUERY_CONDITION" />
+            </intent-filter>
+        </receiver>
+        <!--
+            Don't know if we need this right now. It'll be useful when the functionality to scan every X minutes is implemented.
+        -->
+        <service
+            android:name="org.johanhil.ssid.BackgroundService">
+        </service>
+            
+           
+    </application>
+</manifest>
