@@ -43,7 +43,7 @@ public final class QueryReceiver extends BroadcastReceiver
 		}
 		if (!bundle.containsKey(Constants.BUNDLE_EXTRA_SSID))
 		{
-			Log.e(TAG, "Missing SSID param in Bundle"); //$NON-NLS-1$ //$NON-NLS-2$
+			Log.e(TAG, "Missing SSID param in Bundle");
 			return;
 		}
 

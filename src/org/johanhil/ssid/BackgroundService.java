@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
@@ -36,6 +37,7 @@ public final class BackgroundService extends Service
 	 * once.
 	 */
 	private static final Intent REQUEST_REQUERY = new Intent(com.twofortyfouram.Intent.ACTION_REQUEST_QUERY);
+	private static final String TAG = "locale-ssid-plugin";
 
 	static
 	{
@@ -65,6 +67,9 @@ public final class BackgroundService extends Service
 		/*
 		 * Listens for WifiManager.SCAN_RESULTS_AVAILABLE_ACTION intents and updates
 		 * the SSIDs set.
+		 * 
+		 * Also listens to WIFI_STATE_CHANGED_ACTION to clear the SSID set on wifi disabling, 
+		 * and NETWORK_STATE_CHANGED_ACTION to add the wifi that the user is connected to to the SSIDs.
 		 */
 		mReceiver = new BroadcastReceiver()
 		{
@@ -75,7 +80,7 @@ public final class BackgroundService extends Service
 			{
 				final String action = intent.getAction();
 
-				Log.v("SSIDCondition", String.format("Received Intent action %s", action)); //$NON-NLS-1$ //$NON-NLS-2$
+				Log.v(TAG, String.format("Received Intent action %s", action)); //$NON-NLS-1$ //$NON-NLS-2$
 
 				if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action))
 				{
@@ -96,17 +101,35 @@ public final class BackgroundService extends Service
 				
 				if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action))
 				{
-					Log.d("SSIDCondition", "WIFI State Changed");
+					Log.d(TAG, "WIFI State Changed");
 
 					int new_state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
 
-					Log.d("SSIDCondition", "New Wifi state is " + new_state);
+					Log.d(TAG, "New Wifi state is " + new_state);
 
 					if ((new_state == WifiManager.WIFI_STATE_DISABLED) ||
 							(new_state == WifiManager.WIFI_STATE_DISABLING))
 					{
-						Log.d("SSIDCondition", "Wifi being turned off, clearing SSID list");
+						Log.d(TAG, "Wifi being turned off, clearing SSID list");
 						SSIDs.clear();
+					}					
+				}
+				
+				if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action))
+				{
+					Log.d(TAG, "network state changed. possible connection.");
+					
+					NetworkInfo newNetwork = (NetworkInfo) intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+					
+					// TODO do we need to check if the state is "connecting"?
+					if (newNetwork.getState() == NetworkInfo.State.CONNECTED)
+					{
+						String ssid = wifi.getConnectionInfo().getSSID();
+						if (ssid != null)
+						{
+							Log.d(TAG, "connected to ssid \""+ssid+"\"");
+							SSIDs.add(ssid);
+						}
 					}
 				}
 
